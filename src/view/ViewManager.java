@@ -3,9 +3,9 @@ package view;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.SubScene;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -17,7 +17,7 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.stage.Stage;
 import model.SpaceRunnerButton;
-import model.SpaceRunnerSubscene;
+import model.SpaceRunnerSubScene;
 
 
 
@@ -32,6 +32,8 @@ public class ViewManager {
 	private final static int MENU_BUTTON_START_X = 100;
 	private final static int MENU_BUTTON_START_Y = 150;
 	
+	private SpaceRunnerSubScene creditSubScene;
+	
 	List <SpaceRunnerButton> menuButtons;
 	
 	public ViewManager() {
@@ -40,7 +42,15 @@ public class ViewManager {
 		mainStage = new Stage();
 		mainStage.setScene(mainScene);
 		menuButtons = new ArrayList<>();
+		createSubScenes();
 		createButtons();
+		createLogo();
+		createBackground();
+	}
+	
+	private void createSubScenes() {
+		creditSubScene = new SpaceRunnerSubScene();
+		mainPane.getChildren().add(creditSubScene);
 	}
 	
 	private void addMenuButton(SpaceRunnerButton button) {
@@ -49,11 +59,6 @@ public class ViewManager {
 		menuButtons.add(button);
 		mainPane.getChildren().add(button);
 		createLogo();
-		SpaceRunnerSubscene subscene = new SpaceRunnerSubscene();
-		subscene.setLayoutX(200);
-		subscene.setLayoutY(100);
-		mainPane.getChildren().add(subscene);
-
 	}
 	
 	private void createButtons() {
@@ -83,6 +88,12 @@ public class ViewManager {
 	private void createCreditsButton() {
 		SpaceRunnerButton creditsButton = new SpaceRunnerButton("CREDITS");
 		addMenuButton(creditsButton);
+		creditsButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				creditSubScene.moveSubScene();
+			}
+		});
 	}
 	
 	private void createExitButton() {
