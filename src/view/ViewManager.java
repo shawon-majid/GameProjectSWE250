@@ -33,6 +33,12 @@ public class ViewManager {
 	private final static int MENU_BUTTON_START_Y = 150;
 	
 	private SpaceRunnerSubScene creditSubScene;
+	private SpaceRunnerSubScene helpSubScene;
+	private SpaceRunnerSubScene scoresSubScene;
+	private SpaceRunnerSubScene shipChooserSubScene;
+	
+	private SpaceRunnerSubScene sceneToHide;
+	
 	
 	List <SpaceRunnerButton> menuButtons;
 	
@@ -50,7 +56,14 @@ public class ViewManager {
 	
 	private void createSubScenes() {
 		creditSubScene = new SpaceRunnerSubScene();
+		helpSubScene = new SpaceRunnerSubScene();
+		scoresSubScene = new SpaceRunnerSubScene();
+		shipChooserSubScene = new SpaceRunnerSubScene();
+		
 		mainPane.getChildren().add(creditSubScene);
+		mainPane.getChildren().add(helpSubScene);
+		mainPane.getChildren().add(scoresSubScene);
+		mainPane.getChildren().add(shipChooserSubScene);
 	}
 	
 	private void addMenuButton(SpaceRunnerButton button) {
@@ -62,7 +75,6 @@ public class ViewManager {
 	}
 	
 	private void createButtons() {
-		createBackground();
 		createStartButton();
 		createScoresButton();
 		createHelpButton();
@@ -70,19 +82,50 @@ public class ViewManager {
 		createExitButton();
 	}
 	
+	private void showSubScene(SpaceRunnerSubScene subScene) {
+		if(sceneToHide != null) {
+			sceneToHide.moveSubScene();
+		}
+		subScene.moveSubScene();
+		sceneToHide = subScene;
+	}
+	
 	private void createStartButton() {
 		SpaceRunnerButton startButton = new SpaceRunnerButton("PLAY");
 		addMenuButton(startButton);
+		startButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				// TODO Auto-generated method stub
+				showSubScene(shipChooserSubScene);
+			}
+		});
 	}
 	
 	private void createScoresButton() {
 		SpaceRunnerButton scoresButton = new SpaceRunnerButton("SCORES");
 		addMenuButton(scoresButton);
+		scoresButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				showSubScene(scoresSubScene);
+			}
+		});
 	}
 	
 	private void createHelpButton() {
 		SpaceRunnerButton helpButton = new SpaceRunnerButton("HELP");
 		addMenuButton(helpButton);
+		helpButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				// TODO Auto-generated method stub
+				showSubScene(helpSubScene);
+			}
+		});
 	}
 	
 	private void createCreditsButton() {
@@ -91,7 +134,7 @@ public class ViewManager {
 		creditsButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				creditSubScene.moveSubScene();
+				showSubScene(creditSubScene);
 			}
 		});
 	}
@@ -99,6 +142,14 @@ public class ViewManager {
 	private void createExitButton() {
 		SpaceRunnerButton exitButton = new SpaceRunnerButton("EXIT");
 		addMenuButton(exitButton);
+		exitButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				// TODO Auto-generated method stub
+				mainStage.close();
+			}
+		});
 	}
 	
 	
