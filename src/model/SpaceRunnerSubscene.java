@@ -12,7 +12,7 @@ import javafx.util.Duration;
 
 public class SpaceRunnerSubScene extends SubScene{
 
-	private final static String FONT_PATH = "src/model/resources/kenvector_future.ttf";
+	// private final static String FONT_PATH = "src/model/resources/kenvector_future.ttf";
 	private final static String BACKGROUND_IMAGE = "model/resources/yellow_panel.png";
 	
 	private boolean isHidden;
@@ -32,6 +32,8 @@ public class SpaceRunnerSubScene extends SubScene{
 		
 		setLayoutX(1024);
 		setLayoutY(180);
+		
+		
 	}
 	
 	public void moveSubScene() {
@@ -50,6 +52,10 @@ public class SpaceRunnerSubScene extends SubScene{
 		
 		
 		transition.play();
+	}
+	
+	public AnchorPane getPane() {
+		return (AnchorPane)this.getRoot();
 	}
 
 }

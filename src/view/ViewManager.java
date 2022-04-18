@@ -1,7 +1,10 @@
 package view;
 
+
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.rmi.CORBA.Stub;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,7 +18,11 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import model.InfoLabel;
+import model.SHIP;
+import model.ShipPicker;
 import model.SpaceRunnerButton;
 import model.SpaceRunnerSubScene;
 
@@ -41,6 +48,9 @@ public class ViewManager {
 	
 	
 	List <SpaceRunnerButton> menuButtons;
+	List <ShipPicker> shipList;
+	
+	private SHIP choosenShip; 
 	
 	public ViewManager() {
 		mainPane = new AnchorPane();
@@ -56,16 +66,61 @@ public class ViewManager {
 	
 	private void createSubScenes() {
 		creditSubScene = new SpaceRunnerSubScene();
-		helpSubScene = new SpaceRunnerSubScene();
-		scoresSubScene = new SpaceRunnerSubScene();
-		shipChooserSubScene = new SpaceRunnerSubScene();
-		
 		mainPane.getChildren().add(creditSubScene);
+		
+		helpSubScene = new SpaceRunnerSubScene();
 		mainPane.getChildren().add(helpSubScene);
+		
+		scoresSubScene = new SpaceRunnerSubScene();
 		mainPane.getChildren().add(scoresSubScene);
-		mainPane.getChildren().add(shipChooserSubScene);
+		
+		createShipChooserSubScene();
+			
 	}
 	
+	private void createShipChooserSubScene() {
+		shipChooserSubScene = new SpaceRunnerSubScene();
+		mainPane.getChildren().add(shipChooserSubScene);
+		
+		
+		InfoLabel chooseShipLabel = new InfoLabel("CHOOSE YOUE SHIP");
+		chooseShipLabel.setLayoutX(110);
+		chooseShipLabel.setLayoutY(25);
+		
+		shipChooserSubScene.getPane().getChildren().add(chooseShipLabel);
+		shipChooserSubScene.getPane().getChildren().add(createShipToChoose());
+		shipChooserSubScene.getPane().getChildren().add(createButtonToStart());
+		
+	}
+	
+	private HBox createShipToChoose() {
+		HBox box = new HBox();
+		box.setSpacing(20);
+		shipList = new ArrayList<>();
+		for(SHIP ship : SHIP.values()) {
+			
+			ShipPicker shipToPick = new ShipPicker(ship);
+			box.getChildren().add(shipToPick);
+			shipList.add(shipToPick);
+			shipToPick.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+				@Override
+				public void handle(MouseEvent event) {
+					// TODO Auto-generated method stub
+					for(ShipPicker ship: shipList) {
+						ship.setIsCircleChoosen(false);
+					}
+					shipToPick.setIsCircleChoosen(true);
+					choosenShip = shipToPick.getShip();
+				}
+				
+			});
+		}
+		box.setLayoutX(300 - (118*2));
+		box.setLayoutY(100);
+		return box;
+	}
+
 	private void addMenuButton(SpaceRunnerButton button) {
 		button.setLayoutX(MENU_BUTTON_START_X);
 		button.setLayoutY(MENU_BUTTON_START_Y + menuButtons.size()*100);
@@ -181,6 +236,13 @@ public class ViewManager {
 		});
 		
 		mainPane.getChildren().add(logo);
+	}
+	
+	private SpaceRunnerButton createButtonToStart() {
+		SpaceRunnerButton startButton = new SpaceRunnerButton("START");
+		startButton.setLayoutX(350);
+		startButton.setLayoutY(300);
+		return startButton;
 	}
 
 	public Stage getMainStage() {
