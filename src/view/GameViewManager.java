@@ -5,7 +5,6 @@ import java.util.Random;
 
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
-import javafx.print.Printer.MarginType;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -14,6 +13,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import model.SHIP;
+import model.SmallInfoLabel;
 
 public class GameViewManager {
 	private AnchorPane gamePane;
@@ -40,7 +40,15 @@ public class GameViewManager {
 	private ImageView[] brownMeteors;
 	private ImageView[] greyMeteors;
  	
-	Random randomPositionGenerator;
+	private Random randomPositionGenerator;
+	
+	private ImageView star;
+	private SmallInfoLabel pointsLabel;
+	private ImageView[] playerLifes;
+	private int playerLife;
+	private int points;
+	private final static String GOLD_STAR_IMAGE = "view/resources/star_gold.png";
+	
 	
 	public GameViewManager() {
 		initializeStage();
@@ -90,14 +98,33 @@ public class GameViewManager {
 		this.menuStage.hide();
 		createBackground();
 		createShip(choosenShip);
-		createGameElements();
+		createGameElements(choosenShip);
 		createGameLoop();
 		
 		
 		gameStage.show();
 	}
 	
-	private void createGameElements() {
+	private void createGameElements(SHIP choosenShip) {
+		playerLife = 2;
+		star = new ImageView(GOLD_STAR_IMAGE);
+		setNewElementPos(star);
+		gamePane.getChildren().add(star);
+		pointsLabel = new SmallInfoLabel("POINTS : 00");
+		pointsLabel.setLayoutX(460);
+		pointsLabel.setLayoutY(20);
+		gamePane.getChildren().add(pointsLabel);
+		playerLifes = new ImageView[3];
+		
+		for(int i = 0; i < playerLifes.length; i++) {
+			playerLifes[i] = new ImageView(choosenShip.getUrlLife());
+			playerLifes[i].setLayoutX(455 + (50*i));
+			playerLifes[i].setLayoutY(80);
+			gamePane.getChildren().add(playerLifes[i]);
+ 		}
+		
+		
+		
 		brownMeteors = new ImageView[3];
 		for(int i = 0; i < brownMeteors.length; i++) {
 			brownMeteors[i] = new ImageView(METEOR_BROWN_IMAGE);
@@ -114,6 +141,10 @@ public class GameViewManager {
 	}
 	
 	private void moveGameElements() {
+		
+		star.setLayoutY(star.getLayoutY()+ 5);
+		
+		
 		for(int i = 0; i < brownMeteors.length; i++) {
 			brownMeteors[i].setLayoutY(brownMeteors[i].getLayoutY() + 7);
 			brownMeteors[i].setRotate(brownMeteors[i].getRotate() + 4);
@@ -126,6 +157,10 @@ public class GameViewManager {
 	}
 	
 	private void checkIfElementsAreBehindTheShipAndRelocate() {
+		
+		if(star.getLayoutY() > 1200){
+			setNewElementPos(star);
+		}
 		for(int i = 0; i < brownMeteors.length; i++) {
 			if(brownMeteors[i].getLayoutY() > 900) {
 				setNewElementPos(brownMeteors[i]);
