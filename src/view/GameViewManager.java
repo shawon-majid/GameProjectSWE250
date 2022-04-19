@@ -1,6 +1,8 @@
 package view;
 
 
+import java.util.Random;
+
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.print.Printer.MarginType;
@@ -33,11 +35,17 @@ public class GameViewManager {
 	private GridPane gridPane1;
 	private GridPane gridPane2;
 	private static final String BACKGROUND_IMAGE = "view/resources/darkPurple.png";
-	
+	private static final String METEOR_BROWN_IMAGE = "view/resources/meteorBrown.png";
+	private static final String METEOR_GREY_IMAGE = "view/resources/meteorGrey.png";
+	private ImageView[] brownMeteors;
+	private ImageView[] greyMeteors;
+ 	
+	Random randomPositionGenerator;
 	
 	public GameViewManager() {
 		initializeStage();
 		createKeyListeners();
+		randomPositionGenerator = new Random();
 	}
 
 	private void createKeyListeners() {
@@ -82,9 +90,58 @@ public class GameViewManager {
 		this.menuStage.hide();
 		createBackground();
 		createShip(choosenShip);
+		createGameElements();
 		createGameLoop();
 		
+		
 		gameStage.show();
+	}
+	
+	private void createGameElements() {
+		brownMeteors = new ImageView[3];
+		for(int i = 0; i < brownMeteors.length; i++) {
+			brownMeteors[i] = new ImageView(METEOR_BROWN_IMAGE);
+			setNewElementPos(brownMeteors[i]);
+			gamePane.getChildren().add(brownMeteors[i]);
+		}
+		
+		greyMeteors = new ImageView[3];
+		for(int i = 0; i < greyMeteors.length; i++) {
+			greyMeteors[i] = new ImageView(METEOR_GREY_IMAGE);
+			setNewElementPos(greyMeteors[i]);
+			gamePane.getChildren().add(greyMeteors[i]);
+		}
+	}
+	
+	private void moveGameElements() {
+		for(int i = 0; i < brownMeteors.length; i++) {
+			brownMeteors[i].setLayoutY(brownMeteors[i].getLayoutY() + 7);
+			brownMeteors[i].setRotate(brownMeteors[i].getRotate() + 4);
+		}
+		
+		for(int i = 0; i < greyMeteors.length; i++) {
+			greyMeteors[i].setLayoutY(greyMeteors[i].getLayoutY() + 7);
+			greyMeteors[i].setRotate(greyMeteors[i].getRotate() + 4);
+		}
+	}
+	
+	private void checkIfElementsAreBehindTheShipAndRelocate() {
+		for(int i = 0; i < brownMeteors.length; i++) {
+			if(brownMeteors[i].getLayoutY() > 900) {
+				setNewElementPos(brownMeteors[i]);
+			}
+		}
+		
+		for(int i = 0; i < greyMeteors.length; i++) {
+			if(greyMeteors[i].getLayoutY() > 900) {
+				setNewElementPos(greyMeteors[i]);
+			}
+		}
+	}
+	
+	private void setNewElementPos(ImageView image) {
+		image.setLayoutX(randomPositionGenerator.nextInt(370));
+		image.setLayoutY(-(randomPositionGenerator.nextInt(3200) + 600));
 	}
 	
 	private void createShip(SHIP ChoosenShip) {
@@ -101,9 +158,11 @@ public class GameViewManager {
 			
 			@Override
 			public void handle(long now) {
-				moveShip();
 				moveBackground();
-				
+				moveGameElements();
+				checkIfElementsAreBehindTheShipAndRelocate();
+				moveShip();
+
 			}
 		};
 		
