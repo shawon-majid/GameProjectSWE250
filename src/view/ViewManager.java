@@ -9,6 +9,7 @@ import javax.rmi.CORBA.Stub;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -242,6 +243,27 @@ public class ViewManager {
 		SpaceRunnerButton startButton = new SpaceRunnerButton("START");
 		startButton.setLayoutX(350);
 		startButton.setLayoutY(300);
+		
+		startButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				if(choosenShip != null) {
+					GameViewManager game = new GameViewManager();
+					game.createNewGame(mainStage, choosenShip);
+				}
+				else {
+					Alert alert = new Alert(Alert.AlertType.WARNING);
+					alert.setHeaderText(null);
+					alert.setContentText("You did not choose your ship!");
+					alert.show();
+				}
+				
+				
+			}
+			
+		});
+		
 		return startButton;
 	}
 
