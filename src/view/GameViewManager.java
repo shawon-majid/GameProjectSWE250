@@ -4,6 +4,7 @@ package view;
 import java.util.Random;
 
 import javax.imageio.event.IIOReadWarningListener;
+import javax.sound.midi.MidiChannel;
 
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
@@ -30,6 +31,9 @@ public class GameViewManager {
 	
 	private boolean isLeftKeyPressed;
 	private boolean isRightKeyPressed;
+	private boolean isUpKeyPressed;
+	private boolean isDownKeyPressed;
+	
 	private int angle;
 	
 	private AnimationTimer gameTimer;
@@ -39,12 +43,17 @@ public class GameViewManager {
 	private static final String BACKGROUND_IMAGE = "view/resources/darkPurple.png";
 	private static final String METEOR_BROWN_IMAGE = "view/resources/meteorBrown.png";
 	private static final String METEOR_GREY_IMAGE = "view/resources/meteorGrey.png";
+	private static final String LIGHT_IMAGE = "view/resources/bolt_gold.png";
+	
+	
 	private ImageView[] brownMeteors;
 	private ImageView[] greyMeteors;
  	
 	private Random randomPositionGenerator;
 	
 	private ImageView star;
+	private ImageView light;
+	
 	private SmallInfoLabel pointsLabel;
 	private ImageView[] playerLifes;
 	private int playerLife;
@@ -76,6 +85,12 @@ public class GameViewManager {
 				else if(event.getCode() == KeyCode.RIGHT) {
 					isRightKeyPressed = true;
 				}
+				else if(event.getCode() == KeyCode.UP) {
+					isUpKeyPressed = true;
+				}
+				else if(event.getCode() == KeyCode.DOWN) {
+					isDownKeyPressed = true;
+				}
 			}
 		});
 		
@@ -88,6 +103,12 @@ public class GameViewManager {
 				}
 				else if(event.getCode() == KeyCode.RIGHT) {
 					isRightKeyPressed = false;
+				}
+				else if(event.getCode() == KeyCode.UP) {
+					isUpKeyPressed = false;
+				}
+				else if(event.getCode() == KeyCode.DOWN) {
+					isDownKeyPressed = false;
 				}
 			}
 			
@@ -117,6 +138,7 @@ public class GameViewManager {
 	private void createGameElements(SHIP choosenShip) {
 		playerLife = 2;
 		star = new ImageView(GOLD_STAR_IMAGE);
+		light = new ImageView(LIGHT_IMAGE);
 		setNewElementPos(star);
 		gamePane.getChildren().add(star);
 		pointsLabel = new SmallInfoLabel("POINTS : 00");
@@ -124,6 +146,8 @@ public class GameViewManager {
 		pointsLabel.setLayoutY(20);
 		gamePane.getChildren().add(pointsLabel);
 		playerLifes = new ImageView[3];
+		
+		gamePane.getChildren().add(light);
 		
 		for(int i = 0; i < playerLifes.length; i++) {
 			playerLifes[i] = new ImageView(choosenShip.getUrlLife());
@@ -188,6 +212,11 @@ public class GameViewManager {
 		image.setLayoutY(-(randomPositionGenerator.nextInt(3200) + 600));
 	}
 	
+	private void setElementInsideScene(ImageView image) {
+		image.setLayoutX(randomPositionGenerator.nextInt(600));
+		image.setLayoutY(randomPositionGenerator.nextInt(800));
+	}
+	
 	private void createShip(SHIP ChoosenShip) {
 		ship = new ImageView(ChoosenShip.getUrl());
 		ship.setLayoutX(GAME_WIDTH/2 - 50);
@@ -199,19 +228,29 @@ public class GameViewManager {
 	
 	private void createGameLoop() {
 		gameTimer = new AnimationTimer() {
-			
+			int k = 0;
 			@Override
 			public void handle(long now) {
+				
+				k = (k+1) % 100;
+				System.out.println(k);
 				moveBackground();
 				moveGameElements();
 				checkIfElementsAreBehindTheShipAndRelocate();
 				checkIfElementCollided();
 				moveShip();
+				if(k == 0) showLight();
 
+				
 			}
+
 		};
 		
 		gameTimer.start();
+	}
+	
+	private void showLight() {
+		setElementInsideScene(light);
 	}
 	
 	private void moveShip() {
@@ -252,6 +291,16 @@ public class GameViewManager {
 			}
 			
 			ship.setRotate(angle);
+		}
+		if(isUpKeyPressed && !isDownKeyPressed) {
+			if(ship.getLayoutY() > 0) {
+				ship.setLayoutY(ship.getLayoutY()-3);
+			}
+		}
+		if(!isUpKeyPressed && isDownKeyPressed) {
+			if(ship.getLayoutY() < GAME_HEIGHT-85) {
+				ship.setLayoutY(ship.getLayoutY()+3);
+			}
 		}
 	}
 	
