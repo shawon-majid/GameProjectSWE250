@@ -53,7 +53,7 @@ public class GameViewManager {
  	
 	private Random randomPositionGenerator;
 	
-	private ImageView star;
+	private ImageView[] stars;
 	private ImageView light1, light2;
 	private ImageView horizontalLaser;
 	private ImageView verticalLaser;
@@ -141,8 +141,7 @@ public class GameViewManager {
 	
 	private void createGameElements(SHIP choosenShip) {
 		playerLife = 2;
-		star = new ImageView(GOLD_STAR_IMAGE);
-		setNewElementPos(star);
+		
 		
 		
 		horizontalLaser = new ImageView(HORIZONTAL_LASER);
@@ -151,8 +150,7 @@ public class GameViewManager {
 		light2 = new ImageView(LIGHT_IMAGE);
 		
 		
-		
-		gamePane.getChildren().add(star);
+	
 		gamePane.getChildren().add(horizontalLaser);
 		gamePane.getChildren().add(verticalLaser);
 		gamePane.getChildren().add(light1);
@@ -195,11 +193,23 @@ public class GameViewManager {
 			setNewElementPos(greyMeteors[i]);
 			gamePane.getChildren().add(greyMeteors[i]);
 		}
+		
+		stars = new ImageView[10];
+		for(int i = 0; i < stars.length; i++) {
+			stars[i] = new ImageView(GOLD_STAR_IMAGE);
+			setNewElementPos(stars[i]);
+			gamePane.getChildren().add(stars[i]);
+		}
+		
 	}
 	
 	private void moveGameElements() {
 		
-		star.setLayoutY(star.getLayoutY()+ 5);
+		
+		
+		for(int i = 0; i < stars.length; i++) {
+			stars[i].setLayoutY(stars[i].getLayoutY()+ 5);
+		}
 		
 		
 		for(int i = 0; i < brownMeteors.length; i++) {
@@ -215,9 +225,13 @@ public class GameViewManager {
 	
 	private void checkIfElementsAreBehindTheShipAndRelocate() {
 		
-		if(star.getLayoutY() > 1200){
-			setNewElementPos(star);
+		
+		for(int i = 0; i < stars.length; i++) {
+			if(stars[i].getLayoutY() > 1200) {
+				setNewElementPos(stars[i]);
+			}
 		}
+		
 		for(int i = 0; i < brownMeteors.length; i++) {
 			if(brownMeteors[i].getLayoutY() > 900) {
 				setNewElementPos(brownMeteors[i]);
@@ -421,7 +435,7 @@ public class GameViewManager {
 			removeLife();
 			
 			// we can hide Horizontal laser here to avoid gameOver for laser collision
-			hideLight();
+			// hideLight();
 		}
 	}
 	
@@ -430,19 +444,22 @@ public class GameViewManager {
 			removeLife();
 			
 			// we can hide vertical laser here to avoid gameOver for laser collision
-			hideLight();
+			// hideLight();
 		}
 	}
 	
 	private void checkIfElementCollided() {
-		if(SHIP_RADIUS + STAR_RADIUS > calculateDistance(ship.getLayoutX()+49, ship.getLayoutY() + 37, star.getLayoutX()+15, star.getLayoutY()+15)) {
-			setNewElementPos(star);
-			points++;
-			String textToSet = "POINTS: ";
-			if(points < 10) {
-				textToSet = textToSet + "0";
+		
+		for(int i = 0; i < stars.length; i++) {
+			if(SHIP_RADIUS + STAR_RADIUS > calculateDistance(ship.getLayoutX()+49, ship.getLayoutY() + 37, stars[i].getLayoutX()+15, stars[i].getLayoutY()+15)) {
+				setNewElementPos(stars[i]);
+				points++;
+				String textToSet = "POINTS: ";
+				if(points < 10) {
+					textToSet = textToSet + "0";
+				}
+				pointsLabel.setText(textToSet + points);
 			}
-			pointsLabel.setText(textToSet + points);
 		}
 		
 		
