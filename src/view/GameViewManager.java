@@ -265,11 +265,15 @@ public class GameViewManager {
 			public void handle(long now) {
 				
 				k = (k+1) % 500;
-				System.out.println(k);
+				
+				System.out.println(k); // this will be deleted
+				
 				moveBackground();
 				moveGameElements();
 				checkIfElementsAreBehindTheShipAndRelocate();
 				checkIfElementCollided();
+				checkIfHorizontalLaserCollided();
+				checkIfVerticalLaserCollided();
 				moveShip();
 				
 				if(k == 0) showLight(laserX, laserY);
@@ -300,6 +304,10 @@ public class GameViewManager {
 
 	
 	private void hideLight() {
+		setHorizontalLaserPosition(horizontalLaser, -100);
+		setVerticalLaserPosition(verticalLaser, -100);
+		
+		// although upper code hides the laser from user i still set visibility of laser to false
 		horizontalLaser.setVisible(false);
 		verticalLaser.setVisible(false);
 	}
@@ -405,6 +413,24 @@ public class GameViewManager {
 		
 		if(gridPane2.getLayoutY() >= 1024) {
 			gridPane2.setLayoutY(-1024);
+		}
+	}
+	
+	private void checkIfHorizontalLaserCollided() {
+		if(ship.getLayoutY()+SHIP_RADIUS >= horizontalLaser.getLayoutY() && ship.getLayoutY()+SHIP_RADIUS <= horizontalLaser.getLayoutY()+30) {
+			removeLife();
+			
+			// we can hide Horizontal laser here to avoid gameOver for laser collision
+			hideLight();
+		}
+	}
+	
+	private void checkIfVerticalLaserCollided() {
+		if(ship.getLayoutX()+SHIP_RADIUS >= verticalLaser.getLayoutX() && ship.getLayoutX()+SHIP_RADIUS <= verticalLaser.getLayoutX()+30) {
+			removeLife();
+			
+			// we can hide vertical laser here to avoid gameOver for laser collision
+			hideLight();
 		}
 	}
 	
