@@ -9,6 +9,7 @@ import javax.sound.midi.MidiChannel;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.effect.Light;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -45,7 +46,7 @@ public class GameViewManager {
 	private static final String METEOR_GREY_IMAGE = "view/resources/meteorGrey.png";
 	private static final String HORIZONTAL_LASER = "view/resources/laserHorizonotal.png";
 	private static final String VERTICAL_LASER = "view/resources/laserVertical.png";
-	
+	private static final String LIGHT_IMAGE = "view/resources/bolt_gold.png";
 	
 	private ImageView[] brownMeteors;
 	private ImageView[] greyMeteors;
@@ -53,6 +54,7 @@ public class GameViewManager {
 	private Random randomPositionGenerator;
 	
 	private ImageView star;
+	private ImageView light1, light2;
 	private ImageView horizontalLaser;
 	private ImageView verticalLaser;
 	
@@ -145,15 +147,22 @@ public class GameViewManager {
 		
 		horizontalLaser = new ImageView(HORIZONTAL_LASER);
 		verticalLaser = new ImageView(VERTICAL_LASER);
+		light1 = new ImageView(LIGHT_IMAGE);
+		light2 = new ImageView(LIGHT_IMAGE);
 		
 		
 		
 		gamePane.getChildren().add(star);
 		gamePane.getChildren().add(horizontalLaser);
 		gamePane.getChildren().add(verticalLaser);
+		gamePane.getChildren().add(light1);
+		gamePane.getChildren().add(light2);
+		
 		
 		horizontalLaser.setVisible(false);
 		verticalLaser.setVisible(false);
+		light1.setVisible(false);
+		light2.setVisible(false);
 		
 		
 		pointsLabel = new SmallInfoLabel("POINTS : 00");
@@ -228,14 +237,14 @@ public class GameViewManager {
 	}
 	
 	
-	private void setHorizontalLaserPosition(ImageView image) {
-		image.setLayoutY(randomPositionGenerator.nextInt(GAME_HEIGHT));
+	private void setHorizontalLaserPosition(ImageView image, int laserY) {
+		image.setLayoutY(laserY);
 		image.setLayoutX(0);
 	}
 	
-	private void setVerticalLaserPosition(ImageView image) {
+	private void setVerticalLaserPosition(ImageView image, int laserX) {
 		image.setLayoutY(0);
-		image.setLayoutX(randomPositionGenerator.nextInt(GAME_WIDTH));
+		image.setLayoutX(laserX);
 	}
 	
 	
@@ -251,6 +260,7 @@ public class GameViewManager {
 	private void createGameLoop() {
 		gameTimer = new AnimationTimer() {
 			int k = 1;
+			int laserX, laserY;
 			@Override
 			public void handle(long now) {
 				
@@ -261,8 +271,14 @@ public class GameViewManager {
 				checkIfElementsAreBehindTheShipAndRelocate();
 				checkIfElementCollided();
 				moveShip();
-				if(k == 0) showLight();
+				
+				if(k == 0) showLight(laserX, laserY);
 				if(k == 100) hideLight();
+				if(k == 400) {
+					laserX = randomPositionGenerator.nextInt(GAME_WIDTH); 
+					laserY = randomPositionGenerator.nextInt(GAME_HEIGHT);
+					showCaution(laserX, laserY);
+				}
 				
 			}
 
@@ -271,24 +287,39 @@ public class GameViewManager {
 		gameTimer.start();
 	}
 	
+	private void showCaution(int laserX, int laserY) {
+		light1.setVisible(true);
+		light1.setLayoutX(laserX);
+		light1.setLayoutY(10);
+		
+		light2.setVisible(true);
+		light2.setLayoutX(10);
+		light2.setLayoutY(laserY);
+	}
+	
+
+	
 	private void hideLight() {
 		horizontalLaser.setVisible(false);
 		verticalLaser.setVisible(false);
 	}
 	
-	private void showLight() {
-		showHorizontalLaser();
-		showVerticalLaser();
+	private void showLight(int laserX, int laserY) {
+		light1.setVisible(false);
+		light2.setVisible(false);
+		
+		showHorizontalLaser(laserY);
+		showVerticalLaser(laserX);
 	}
 	
-	private void showHorizontalLaser() {
+	private void showHorizontalLaser(int laserY) {
 		horizontalLaser.setVisible(true);
-		setHorizontalLaserPosition(horizontalLaser);
+		setHorizontalLaserPosition(horizontalLaser, laserY);
 	}
 	
-	private void showVerticalLaser() {
+	private void showVerticalLaser(int laserX) {
 		verticalLaser.setVisible(true);
-		setVerticalLaserPosition(verticalLaser);
+		setVerticalLaserPosition(verticalLaser, laserX);
 	}
 	
 	
