@@ -43,7 +43,8 @@ public class GameViewManager {
 	private static final String BACKGROUND_IMAGE = "view/resources/darkPurple.png";
 	private static final String METEOR_BROWN_IMAGE = "view/resources/meteorBrown.png";
 	private static final String METEOR_GREY_IMAGE = "view/resources/meteorGrey.png";
-	private static final String LIGHT_IMAGE = "view/resources/bolt_gold.png";
+	private static final String HORIZONTAL_LASER = "view/resources/laserHorizonotal.png";
+	private static final String VERTICAL_LASER = "view/resources/laserVertical.png";
 	
 	
 	private ImageView[] brownMeteors;
@@ -52,7 +53,8 @@ public class GameViewManager {
 	private Random randomPositionGenerator;
 	
 	private ImageView star;
-	private ImageView light;
+	private ImageView horizontalLaser;
+	private ImageView verticalLaser;
 	
 	private SmallInfoLabel pointsLabel;
 	private ImageView[] playerLifes;
@@ -138,16 +140,29 @@ public class GameViewManager {
 	private void createGameElements(SHIP choosenShip) {
 		playerLife = 2;
 		star = new ImageView(GOLD_STAR_IMAGE);
-		light = new ImageView(LIGHT_IMAGE);
 		setNewElementPos(star);
+		
+		
+		horizontalLaser = new ImageView(HORIZONTAL_LASER);
+		verticalLaser = new ImageView(VERTICAL_LASER);
+		
+		
+		
 		gamePane.getChildren().add(star);
+		gamePane.getChildren().add(horizontalLaser);
+		gamePane.getChildren().add(verticalLaser);
+		
+		horizontalLaser.setVisible(false);
+		verticalLaser.setVisible(false);
+		
+		
 		pointsLabel = new SmallInfoLabel("POINTS : 00");
 		pointsLabel.setLayoutX(460);
 		pointsLabel.setLayoutY(20);
 		gamePane.getChildren().add(pointsLabel);
 		playerLifes = new ImageView[3];
 		
-		gamePane.getChildren().add(light);
+		
 		
 		for(int i = 0; i < playerLifes.length; i++) {
 			playerLifes[i] = new ImageView(choosenShip.getUrlLife());
@@ -212,10 +227,17 @@ public class GameViewManager {
 		image.setLayoutY(-(randomPositionGenerator.nextInt(3200) + 600));
 	}
 	
-	private void setElementInsideScene(ImageView image) {
-		image.setLayoutX(randomPositionGenerator.nextInt(600));
-		image.setLayoutY(randomPositionGenerator.nextInt(800));
+	
+	private void setHorizontalLaserPosition(ImageView image) {
+		image.setLayoutY(randomPositionGenerator.nextInt(GAME_HEIGHT));
+		image.setLayoutX(0);
 	}
+	
+	private void setVerticalLaserPosition(ImageView image) {
+		image.setLayoutY(0);
+		image.setLayoutX(randomPositionGenerator.nextInt(GAME_WIDTH));
+	}
+	
 	
 	private void createShip(SHIP ChoosenShip) {
 		ship = new ImageView(ChoosenShip.getUrl());
@@ -228,11 +250,11 @@ public class GameViewManager {
 	
 	private void createGameLoop() {
 		gameTimer = new AnimationTimer() {
-			int k = 0;
+			int k = 1;
 			@Override
 			public void handle(long now) {
 				
-				k = (k+1) % 100;
+				k = (k+1) % 500;
 				System.out.println(k);
 				moveBackground();
 				moveGameElements();
@@ -240,7 +262,7 @@ public class GameViewManager {
 				checkIfElementCollided();
 				moveShip();
 				if(k == 0) showLight();
-
+				if(k == 100) hideLight();
 				
 			}
 
@@ -249,9 +271,27 @@ public class GameViewManager {
 		gameTimer.start();
 	}
 	
-	private void showLight() {
-		setElementInsideScene(light);
+	private void hideLight() {
+		horizontalLaser.setVisible(false);
+		verticalLaser.setVisible(false);
 	}
+	
+	private void showLight() {
+		showHorizontalLaser();
+		showVerticalLaser();
+	}
+	
+	private void showHorizontalLaser() {
+		horizontalLaser.setVisible(true);
+		setHorizontalLaserPosition(horizontalLaser);
+	}
+	
+	private void showVerticalLaser() {
+		verticalLaser.setVisible(true);
+		setVerticalLaserPosition(verticalLaser);
+	}
+	
+	
 	
 	private void moveShip() {
 		if(isLeftKeyPressed && !isRightKeyPressed) {
